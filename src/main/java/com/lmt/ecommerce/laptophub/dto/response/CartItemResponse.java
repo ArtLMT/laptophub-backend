@@ -9,9 +9,13 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class OrderItemResponse {
+public class CartItemResponse {
     private Long id;
     private Long productId;
     private Integer quantity;
-    private BigDecimal priceAtPurchase;
+
+    private String productName;
+    private String skuCode;
+    private BigDecimal price;
+    private BigDecimal subTotal;
 }
