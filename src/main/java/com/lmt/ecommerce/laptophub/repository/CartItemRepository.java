@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface CartItemRepository extends JpaRepository<CartItem, Long> {
     @Query("SELECT c FROM CartItem c JOIN FETCH c.product WHERE c.user.id = :userId" ) // Lấy luôn Product
     List<CartItem> findAllByUserId(Long userId);
-
+    Optional<CartItem> findByIdAndUserId(Long id,Long userId);
     Optional<CartItem> findByUserIdAndProductId(Long userId, Long productId);
     void deleteAllByUserId(Long userId);
 }

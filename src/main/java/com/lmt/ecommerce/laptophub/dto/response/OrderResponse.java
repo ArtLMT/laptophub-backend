@@ -13,6 +13,7 @@ import java.util.List;
 @Builder
 public class OrderResponse {
     private Long id;
+    private Long userId;
     // OrderItemDetail chỉ chứa chi tiết OrderItem
     private List<OrderItemDetail> items;
     // Làm kiểu này thay vì trả về OrderItem để tránh lập vô hạn
