@@ -30,6 +30,7 @@ public class User extends BaseEntity implements UserDetails{
     private String fullName;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @ToString.Exclude
     private List<Order> orders;
 
     @Override

@@ -20,7 +20,7 @@ public class UserRegisterRequest {
     private String email;
 
     @NotBlank(message = "Username can't be empty")
-    private String username;
+    private String fullName;
 
     @NotBlank(message = "Password can't be empty")
     @Size(min = 8, message = "Password must be at least 8 characters")

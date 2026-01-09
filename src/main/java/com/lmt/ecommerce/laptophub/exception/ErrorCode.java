@@ -8,6 +8,11 @@ public enum ErrorCode {
     REFRESH_TOKEN_NOT_FOUND,
     UNAUTHENTICATED,
 
+    // User
+    USERNAME_ALREADY_EXISTS,
+    EMAIL_ALREADY_EXISTS,
+
+
     // Product
     PRODUCT_NOT_FOUND,
     PRODUCT_NOT_AVAILABLE,
