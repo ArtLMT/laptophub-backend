@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/carts")
+@RequestMapping("/api/carts")
 @RequiredArgsConstructor
 public class CartController {
     private final CartService cartService;
@@ -21,8 +21,8 @@ public class CartController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public CartItemResponse addCartItem(@RequestBody CartItemRequest request, Long userId) {
-        return cartService.addCartItem(userId, request);
+    public CartItemResponse addCartItem(@RequestBody CartItemRequest request) {
+        return cartService.addCartItem(request);
     }
 
     @PutMapping("/{id}")

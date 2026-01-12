@@ -24,14 +24,12 @@ public class AuthServiceImpl implements AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
-    private final RefreshTokenServiceImpl refreshTokenService; // Inject Service này vào
+    private final RefreshTokenServiceImpl refreshTokenService;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // LOGIN: Trả về JwtResponse chứa 2 chuỗi Token
     @Override
     public JwtResponse login(UserLoginRequest request) {
-        // 1. Xác thực username/password
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
@@ -49,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public JwtResponse refreshAccessToken(String refreshTokenRequest) {
-        return refreshTokenService.findByToken(refreshTokenRequest) // Bạn cần thêm hàm findByToken bên service kia
+        return refreshTokenService.findByToken(refreshTokenRequest)
                 .map(refreshTokenService::verifyExpiration)
                 .map(RefreshToken::getUser)
                 .map(user -> {
@@ -79,8 +77,9 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void logout(Long userId) {
-        refreshTokenService.deleteByUserId(userId);
+    public void logout(String refreshToken) {
+//        refreshTokenService.deleteByUserId(userId);
+        refreshTokenService.revokeRefreshToken(refreshToken);
     }
 
 }

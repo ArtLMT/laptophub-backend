@@ -1,6 +1,7 @@
 package com.lmt.ecommerce.laptophub.security;
 
 import com.lmt.ecommerce.laptophub.entity.User;
+import com.lmt.ecommerce.laptophub.repository.UserRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -26,6 +27,8 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtils jwtUtils;
+    private final UserRepository userRepository;
+
 
     @Override
     protected void doFilterInternal(
@@ -37,19 +40,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             String token = parseJwt(request);
 
             if (token != null && jwtUtils.validateJwtToken(token)) {
-                String username = jwtUtils.getUsernameFromJwtToken(token);
-
-                User userEntity = new User();
                 String email = jwtUtils.getUsernameFromJwtToken(token);
-                userEntity.setEmail(email);
-                userEntity.setFullName(""); // Token hiện chưa có name, để rỗng hoặc thêm claim sau
-                userEntity.setPassword("");
 
+                // Vì User đã implements UserDetails nên có thể dùng luôn
+                UserDetails userDetails = userRepository.findByEmail(email)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+                // --- 3. TẠO AUTHENTICATION VỚI USER THẬT ---
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(
-                                userEntity,
+                                userDetails,
                                 null,
-                                userEntity.getAuthorities()
+                                userDetails.getAuthorities()
                         );
 
                 authentication.setDetails(
@@ -58,6 +60,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
+
         } catch (Exception e) {
             log.error("Cannot set user authentication: {}", e.getMessage());
         }

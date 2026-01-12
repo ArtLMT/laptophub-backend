@@ -11,10 +11,12 @@ import com.lmt.ecommerce.laptophub.repository.ProductRepository;
 import com.lmt.ecommerce.laptophub.repository.UserRepository;
 import com.lmt.ecommerce.laptophub.service.CartService;
 
+import com.lmt.ecommerce.laptophub.util.SecurityUtils;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -27,12 +29,12 @@ public class CartServiceImpl implements CartService {
 
     @Override
     @Transactional
-    public CartItemResponse addCartItem(Long userId, CartItemRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+    public CartItemResponse addCartItem( CartItemRequest request) {
+        User user = SecurityUtils.getCurrentUser();
 
         Product product = productRepository.findById(request.getProductId()).orElseThrow(() -> new RuntimeException("Product not found with id: " + request.getProductId()));
 
-        Optional<CartItem> existedItem = cartRepository.findByUserIdAndProductId(userId, request.getProductId());
+        Optional<CartItem> existedItem = cartRepository.findByUserIdAndProductId(user.getId(), request.getProductId());
 
         CartItem cartItem;
         if (existedItem.isPresent()) {
@@ -51,6 +53,15 @@ public class CartServiceImpl implements CartService {
         CartItem cartItem = cartRepository.findById(id).orElseThrow(() -> new RuntimeException("CartItem not found with id: " + id));
 
         return mapper.toCartItemResponse(cartItem);
+    }
+
+    @Override
+    public List<CartItemResponse> getCartItemByUserId(Long userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        List<CartItem> cartItems = cartRepository.findAllByUserId(userId);
+
+        return cartItems.stream().map(mapper::toCartItemResponse).toList();
     }
 
     @Override

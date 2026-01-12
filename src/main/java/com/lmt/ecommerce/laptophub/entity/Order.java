@@ -33,4 +33,17 @@ public class Order extends BaseEntity{
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    @Column(name = "shipping_address", nullable = false, length = 500)
+    private String shippingAddress;
+
+    @Column(name = "phone_number", nullable = false, length = 15)
+    private String phoneNumber;
+
+    @Column(name = "payment_method", nullable = false)
+    private String paymentMethod;
+    // private PaymentMethod paymentMethod;
+
+    @Column(name = "note", length = 1000)
+    private String note;
 }

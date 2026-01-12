@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -37,7 +34,7 @@ public class AuthController {
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", jwtResponse.getRefreshToken())
                 .httpOnly(true)
                 .secure(true)
-                .path("/api/auth/refresh") // Chỉ gửi cookie này khi gọi endpoint refresh
+                .path("/api/auth")
                 .maxAge(7 * 24 * 60 * 60) // 7 ngày
                 .sameSite("Strict")
                 .build();
@@ -67,7 +64,7 @@ public class AuthController {
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", jwtResponse.getRefreshToken())
                 .httpOnly(true)
                 .secure(true)
-                .path("/api/auth/refresh")
+                .path("/api/auth")
                 .maxAge(7 * 24 * 60 * 60) // Config giống login
                 .sameSite("Strict")
                 .build();
@@ -80,8 +77,16 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout() {
-        // Logic logout: Xóa Cookie bằng cách set MaxAge = 0
+    public ResponseEntity<?> logout(
+            // Lấy value của cookie có tên "refreshToken".
+            // required = false để nếu không có cookie thì code không bị lỗi 500 (vẫn cho logout thành công)
+            @CookieValue(name = "refreshToken", required = false) String refreshToken
+    ) {
+        if (refreshToken != null && !refreshToken.isEmpty()) {
+            authService.logout(refreshToken);
+        }
+
+        // 2. Xử lý phía Client: Xóa Cookie bằng cách set MaxAge = 0
         ResponseCookie jwtCookie = ResponseCookie.from("accessToken", "").path("/").maxAge(0).build();
         ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", "").path("/api/auth/refresh").maxAge(0).build();
 

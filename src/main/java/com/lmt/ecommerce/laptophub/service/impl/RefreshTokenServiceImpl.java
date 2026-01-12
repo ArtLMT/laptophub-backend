@@ -46,11 +46,41 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
             refreshTokenRepository.delete(token);
             throw new RuntimeException("Refresh token was expired. Please make a new signin request");
         }
+
+        if (token.isRevoked()) {
+//            refreshTokenRepository.delete(token);
+            throw new RuntimeException("Refresh token was revoked. Please make a new signin request");
+        }
+
         return token;
     }
 
     @Transactional
     public void deleteByUserId(Long userId) {
         refreshTokenRepository.deleteByUserId(userId);
+    }
+
+    public void revokeAllUserTokens(Long userId) {
+        var validUserTokens = refreshTokenRepository.findAllByUserIdAndRevokedFalse(userId);
+        if (validUserTokens.isEmpty())
+            return;
+
+        validUserTokens.forEach(token -> {
+            token.setRevoked(true);
+        });
+
+        refreshTokenRepository.saveAll(validUserTokens);
+    }
+
+    public void revokeRefreshToken(String token) {
+        // 1. Tìm token trong DB
+        System.out.println("Chay toi TokenService roi");
+        var tokenOptional = refreshTokenRepository.findByToken(token);
+
+        // 2. Nếu tồn tại thì xóa hoặc set revoked
+        tokenOptional.ifPresent(refreshToken -> {
+             refreshToken.setRevoked(true);
+             refreshTokenRepository.save(refreshToken);
+        });
     }
 }
