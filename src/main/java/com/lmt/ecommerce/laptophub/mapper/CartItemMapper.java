@@ -11,18 +11,23 @@ import java.math.BigDecimal;
 @Mapper(componentModel = "spring")
 public interface CartItemMapper {
 
-    @Mapping(target = "productId", source = "product.id")
-    @Mapping(target = "productName", source = "product.name")
-    @Mapping(target = "skuCode", source = "product.skuCode")
-    @Mapping(target = "price", source = "product.price")
+    // Lấy thông tin từ "Ông nội" (Product)
+    @Mapping(target = "productId", source = "productVariant.product.id")
+    @Mapping(target = "productName", source = "productVariant.product.name")
+
+    // Lấy thông tin từ "Cha" (ProductVariant)
+    @Mapping(target = "skuCode", source = "productVariant.skuCode")
+    @Mapping(target = "price", source = "productVariant.price")
+
     @Mapping(target = "subTotal", source = ".", qualifiedByName = "calculateSubTotal")
     CartItemResponse toCartItemResponse(CartItem cartItem);
 
     @Named("calculateSubTotal")
     default BigDecimal calculateSubTotal(CartItem cartItem) {
-        if (cartItem.getProduct() == null || cartItem.getProduct().getPrice() == null) {
+        if (cartItem.getProductVariant() == null || cartItem.getProductVariant().getPrice() == null) {
             return BigDecimal.ZERO;
         }
-        return cartItem.getProduct().getPrice().multiply(new BigDecimal(cartItem.getQuantity()));
+        return cartItem.getProductVariant().getPrice()
+                .multiply(new BigDecimal(cartItem.getQuantity()));
     }
 }

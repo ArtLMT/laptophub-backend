@@ -19,9 +19,9 @@ public class OrderItem extends BaseEntity {
     @ToString.Exclude
     private Order order;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id",nullable = false)
-    private Product product;
+    @ManyToOne
+    @JoinColumn(name = "product_variant_id")
+    private ProductVariant productVariant;
 
     private Integer quantity;
     private BigDecimal priceAtPurchase;

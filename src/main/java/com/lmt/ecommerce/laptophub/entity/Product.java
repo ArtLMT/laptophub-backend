@@ -1,13 +1,16 @@
 package com.lmt.ecommerce.laptophub.entity;
 
+import com.lmt.ecommerce.laptophub.common.ProductType;
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
+import org.hibernate.type.SqlTypes;
 
-import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Getter
 @Setter
@@ -23,12 +26,23 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    @Column(name = "sku_code", nullable = false, unique = true)
-    private String skuCode;
+    @Column(name = "brand", nullable = false)
+    private String brand;
 
-    @Column(nullable = false)
-    private BigDecimal price;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "product_type", nullable = false)
+    private ProductType type;
 
-    @Column(name = "is_flash_sale")
-    private Boolean isFlashSale;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "common_attributes", columnDefinition = "json") // Thêm tên cột cho rõ ràng
+    private Map<String, Object> commonAttributes;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ProductVariant> variants = new ArrayList<>();
+
+    // Helper method: Giúp code trong Service gọn hơn khi add variant
+    public void addVariant(ProductVariant variant) {
+        variants.add(variant);
+        variant.setProduct(this); // Set luôn cha cho nó
+    }
 }

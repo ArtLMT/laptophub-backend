@@ -20,10 +20,9 @@ public class CartItem extends BaseEntity{
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "product_id", nullable = false)
-    @ToString.Exclude
-    private Product product;
+    @ManyToOne
+    @JoinColumn(name = "product_variant_id")
+    private ProductVariant productVariant;
 
     private Integer quantity;
 }

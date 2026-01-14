@@ -1,18 +1,27 @@
 package com.lmt.ecommerce.laptophub.dto.response;
 
+import com.lmt.ecommerce.laptophub.common.ProductType;
 import lombok.*;
 
-import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.List;
 
-@Getter
 @Setter
+@Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
-public class ProductResponse {
+public abstract class ProductResponse {
+
     private Long id;
     private String name;
-    private String skuCode;
-    private BigDecimal price;
-    private boolean isFlashSale;
+    private String brand;
+    private ProductType type;
+
+    // Abstract methods để ép class con phải khai báo
+    public abstract Object getCommonAttributes();
+    public abstract List<? extends ProductVariantResponse<?>> getVariants();
+
+    // Setter abstract để Mapper gọi
+    public abstract void setCommonAttributes(Object attributes);
+    public abstract void setVariants(List variants);
 }

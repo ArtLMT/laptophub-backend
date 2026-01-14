@@ -9,14 +9,17 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
-    // 1. Map Order -> OrderResponse
+
     @Mapping(target = "userId", source = "user.id")
     @Mapping(target = "status", source = "orderStatus")
     OrderResponse toOrderResponse(Order order);
 
-    @Mapping(target = "productId", source = "product.id")
-    @Mapping(target = "productName", source = "product.name")
-    @Mapping(target = "skuCode", source = "product.skuCode")
+
+    @Mapping(target = "productId", source = "productVariant.product.id")
+    @Mapping(target = "productName", source = "productVariant.product.name")
+    @Mapping(target = "skuCode", source = "productVariant.skuCode") // SKU nằm ở Variant
+        // Nếu OrderItemDetail có field price, nhớ lấy từ variant:
+        // @Mapping(target = "price", source = "productVariant.price")
     OrderResponse.OrderItemDetail toOrderItemDetail(OrderItem orderItem);
 
     @Mapping(target = "id", ignore = true)

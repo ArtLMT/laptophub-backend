@@ -1,6 +1,7 @@
 package com.lmt.ecommerce.laptophub.controller;
 
 import com.lmt.ecommerce.laptophub.dto.request.ProductRequest;
+import com.lmt.ecommerce.laptophub.dto.request.ProductVariantRequest;
 import com.lmt.ecommerce.laptophub.dto.response.ProductResponse;
 import com.lmt.ecommerce.laptophub.service.ProductService;
 import jakarta.validation.Valid;
@@ -34,8 +35,22 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    @ResponseStatus(HttpStatus.NO_CONTENT) // Trả về 204 No Content (thành công nhưng không có body)
+    @ResponseStatus(HttpStatus.NO_CONTENT) // Trả về 204 No Content
     public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
+    }
+
+    @DeleteMapping("/{productId}/variants/{variantId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteProductVariant(@PathVariable Long productId,
+                                     @PathVariable Long variantId) {
+        productService.deleteProductVariant(productId, variantId);
+    }
+
+    @PostMapping("/{productId}/variants")
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProductResponse addVariant(@PathVariable Long productId,
+                                      @RequestBody @Valid ProductVariantRequest<?> request) {
+        return productService.addProductVariant(productId, request);
     }
 }
